@@ -23,7 +23,7 @@ type FileSplitType int
 const (
 	// STypeDate 按照日期切分
 	STypeDate FileSplitType = iota
-	// STypeSize 按照大小切分 单位 M
+	// STypeSize 按照大小切分 单位 B
 	STypeSize
 	// STypeTime 按照时间切分
 	STypeTime
@@ -55,7 +55,7 @@ func NewDateSplitWriter() (*FileWriter, error) {
 	return w, nil
 }
 
-// NewSizeSplitWriter 返回 根据文件大小分割的 日志文件 writer
+// NewSizeSplitWriter 返回 根据文件大小(单位 Byte)分割的 日志文件 writer
 func NewSizeSplitWriter(size int64) (*FileWriter, error) {
 	w := &FileWriter{
 		dir:           defDir,
@@ -106,12 +106,21 @@ func (fw *FileWriter) SetCheckInterval(d time.Duration) {
 
 // StartCheck 启动分割检查
 func (fw *FileWriter) StartCheck() {
-	ticker := time.NewTicker(fw.checkInterval)
+	var ticker *time.Ticker
+	if fw.splitType == STypeTime {
+		ticker = time.NewTicker(fw.splitTime)
+	} else {
+		ticker = time.NewTicker(fw.checkInterval)
+	}
+
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				if fw.checkSplit() {
+				if fw.splitType == STypeTime {
+					fw.split()
+				} else if fw.checkSplit() {
+					// fmt.Println("split")
 					fw.split()
 				}
 			}
@@ -157,19 +166,28 @@ func (fw *FileWriter) getBackupName() string {
 	var count int
 	name := fw.createTime.Format(dateFormat)
 	walkFunc := func(path string, info os.FileInfo, err error) error {
-		if strings.HasPrefix(path, name) {
+		if strings.HasPrefix(info.Name(), name) {
 			count++
 		}
 		return nil
 	}
 	err := filepath.Walk(fw.dir, walkFunc)
 	if err != nil {
-		return fmt.Sprintf("%s.x.log", name)
+		return filepath.Join(fw.dir, fmt.Sprintf("%s.x.log", name))
 	}
-	return fmt.Sprintf("%s.%3d.log", name, count)
+	// fmt.Println("count:", count)
+	return filepath.Join(fw.dir, fmt.Sprintf("%s.%03d.log", name, count))
 }
 
 func (fw *FileWriter) newFile() {
+	if _, err := os.Stat(fw.dir); err != nil {
+		if os.IsNotExist(err) {
+			err := os.MkdirAll(fw.dir, 0777)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
 	fw.fileName = filepath.Join(fw.dir, fw.name)
 	file, err := os.Create(fw.fileName)
 	if err != nil {
