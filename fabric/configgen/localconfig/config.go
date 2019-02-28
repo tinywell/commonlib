@@ -17,14 +17,28 @@ func GetChannelProfileTemplate() *tc.Profile {
 	return copyProfile(defaultChannelProfile)
 }
 
+// GetConsortiumTemplate 返回 Consortium 模版
 func GetConsortiumTemplate() *tc.Consortium {
 	defaultConsortium := &DefaultConsortium
 	return copyConsortium(defaultConsortium)
 }
 
+// GetApplicationTemplate 返回 Applicaiton 模版
 func GetApplicationTemplate() *tc.Application {
 	defaultApplication := &DefaultApplication
 	return copyApplication(defaultApplication)
+}
+
+// GetOrdererTemplate 返回 Orderer 模版
+func GetOrdererTemplate() *tc.Orderer {
+	defaultOrderer := &DefaultOrderer
+	return copyOrderer(defaultOrderer)
+}
+
+// GetOrganizationTemplate 返回 Organization 模版
+func GetOrganizationTemplate() *tc.Organization {
+	defaultOrg := &DefaultOrganization
+	return copyOrganization(defaultOrg)
 }
 
 func copyCapabilities(cap map[string]bool) map[string]bool {

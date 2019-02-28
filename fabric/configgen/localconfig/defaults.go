@@ -11,15 +11,13 @@ const (
 	// TestChainID is the channel name used for testing purposes when one is
 	// not given
 	TestChainID = "testchainid"
-
+	// DefaultSysChainID 默认系统链名称
 	DefaultSysChainID = "systemchainid"
-
 	// SampleConsortiumName is the sample consortium from the
 	// sample configtx.yaml
 	SampleConsortiumName = "SampleConsortium"
 	// SampleOrgName is the name of the sample org in the sample profiles
 	SampleOrgName = "SampleOrg"
-
 	// AdminRoleAdminPrincipal is set as AdminRole to cause the MSP role of
 	// type Admin to be used as the admin principal default
 	AdminRoleAdminPrincipal = "Role.ADMIN"
@@ -47,20 +45,25 @@ const (
 //   then the v1.0.x peer will deliberately crash.
 //
 ////////////////////////////////////////////////////////////////////////////////
+
+// DefaultCapabilitiesOrderer orderer 默认 CAPABILITIES
 var DefaultCapabilitiesOrderer = map[string]bool{
 	"V1_1": true,
 }
 
+// DefaultCapabilitiesChannel channel 默认 CAPABILITIES
 var DefaultCapabilitiesChannel = map[string]bool{
 	"V1.3": true,
 }
 
+// DefaultCapabilitiesApplication Applicaiton 默认 CAPABILITIES
 var DefaultCapabilitiesApplication = map[string]bool{
 	"V1_3": true,
 	"V1_2": false,
 	"V1_1": false,
 }
 
+// DefaultACLs 默认 ACL
 var DefaultACLs = map[string]string{
 	"lscc/ChaincodeExists":           "/Channel/Application/Readers",
 	"lscc/GetDeploymentSpec":         "/Channel/Application/Readers",
@@ -80,28 +83,36 @@ var DefaultACLs = map[string]string{
 	"event/FilteredBlock":            "/Channel/Application/Readers",
 }
 
+// DefaultPoliciesApplication 默认 Applicaiton 策略
 var DefaultPoliciesApplication = map[string]*tc.Policy{
 	"Readers": &tc.Policy{Type: "ImplicitMeta", Rule: "ANY Readers"},
 	"Writers": &tc.Policy{Type: "ImplicitMeta", Rule: "ANY Writers"},
 	"Admins":  &tc.Policy{Type: "ImplicitMeta", Rule: "MAJORITY Admins"},
 }
+
+// DefaultPoliciesOrderer 默认 orderer 策略
 var DefaultPoliciesOrderer = map[string]*tc.Policy{
 	"Readers":         &tc.Policy{Type: "ImplicitMeta", Rule: "ANY Readers"},
 	"Writers":         &tc.Policy{Type: "ImplicitMeta", Rule: "ANY Writers"},
 	"Admins":          &tc.Policy{Type: "ImplicitMeta", Rule: "MAJORITY Admins"},
 	"BlockValidation": &tc.Policy{Type: "ImplicitMeta", Rule: "ANY Writers"},
 }
+
+// DefaultPoliciesChannel 默认 channel 策略
 var DefaultPoliciesChannel = map[string]*tc.Policy{
 	"Readers": &tc.Policy{Type: "ImplicitMeta", Rule: "ANY Readers"},
 	"Writers": &tc.Policy{Type: "ImplicitMeta", Rule: "ANY Writers"},
 	"Admins":  &tc.Policy{Type: "ImplicitMeta", Rule: "MAJORITY Admins"},
 }
+
+// DefaultPoliciesOrganization 默认 organization 策略
 var DefaultPoliciesOrganization = map[string]*tc.Policy{
 	"Readers": &tc.Policy{Type: "Signature", Rule: "OR('SampleOrg.member')"},
 	"Writers": &tc.Policy{Type: "Signature", Rule: "OR('SampleOrg.member')"},
 	"Admins":  &tc.Policy{Type: "Signature", Rule: "OR('SampleOrg.member')"},
 }
 
+// DefaultOrganization Organization 模版
 var DefaultOrganization = tc.Organization{
 	Name:     SampleOrgName,
 	ID:       SampleOrgName,
@@ -114,6 +125,7 @@ var DefaultOrganization = tc.Organization{
 	AdminPrincipal: AdminRoleAdminPrincipal,
 }
 
+// DefaultApplication Applicaiton 模版
 var DefaultApplication = tc.Application{
 	Organizations: nil,
 	Capabilities:  DefaultCapabilitiesApplication,
@@ -122,6 +134,7 @@ var DefaultApplication = tc.Application{
 	ACLs:          DefaultACLs,
 }
 
+// DefaultOrderer Orderer 模版
 var DefaultOrderer = tc.Orderer{
 	OrdererType:  "solo",
 	Addresses:    []string{"127.0.0.1:7050"},
@@ -141,15 +154,18 @@ var DefaultOrderer = tc.Orderer{
 	Policies:      DefaultPoliciesOrderer,
 }
 
+// DefaultConsortium Consortium 模版
 var DefaultConsortium = tc.Consortium{
 	Organizations: []*tc.Organization{&DefaultOrganization},
 }
 
+// DefaultProfileChannel Channel Profile 模版
 var DefaultProfileChannel = tc.Profile{
 	Consortium:  SampleConsortiumName,
 	Application: &DefaultApplication,
 }
 
+// DefaultProfileOrderer Orderer Profile 模版
 var DefaultProfileOrderer = tc.Profile{
 	Consortium:  SampleConsortiumName,
 	Application: nil,
