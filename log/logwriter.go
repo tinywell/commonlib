@@ -1,7 +1,6 @@
 package log
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -51,7 +50,7 @@ func NewDateSplitWriter() (*FileWriter, error) {
 		splitType:     STypeDate,
 		checkInterval: defCheckInterval,
 	}
-	w.newFile()
+	// w.newFile()
 	return w, nil
 }
 
@@ -64,7 +63,7 @@ func NewSizeSplitWriter(size int64) (*FileWriter, error) {
 		checkInterval: defCheckInterval,
 		splitSize:     size,
 	}
-	w.newFile()
+	// w.newFile()
 	return w, nil
 }
 
@@ -77,24 +76,29 @@ func NewTimeSplitWriter(d time.Duration) (*FileWriter, error) {
 		checkInterval: defCheckInterval,
 		splitTime:     d,
 	}
-	w.newFile()
+	// w.newFile()
 	return w, nil
+}
+
+// SyncWriter 刷新 wirter 文件相关配置
+func (fw *FileWriter) SyncWriter() {
+	fw.newFile()
 }
 
 // Write 实现 io.Writer 接口
 func (fw *FileWriter) Write(p []byte) (n int, err error) {
 	if fw.file == nil {
-		return 0, errors.New("inner writer nil")
+		fw.newFile()
 	}
 	return fw.file.Write(p)
 }
 
-// SetDir 设置日志目录
+// SetDir 设置日志目录，默认 ”logs“
 func (fw *FileWriter) SetDir(dir string) {
 	fw.dir = dir
 }
 
-// SetName 设置日志名字
+// SetName 设置日志名字，默认 ”default.log“
 func (fw *FileWriter) SetName(name string) {
 	fw.name = name
 }
