@@ -1,4 +1,4 @@
-module github.com/tinywell/util/log/zaplog
+module github.com/tinywell/utils/log/zaplog
 
 go 1.12
 
